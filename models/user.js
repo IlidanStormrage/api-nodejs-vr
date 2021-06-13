@@ -1,8 +1,8 @@
 "use strict";
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+var mongoose = require("mongoose");
+var Schema = mongoose.Schema;
 
-const userSchema = Schema({
+var UserSchema = Schema({
   name: String,
   surname: String,
   email: String,
@@ -11,5 +11,5 @@ const userSchema = Schema({
   role: String,
 });
 
-module.export = mongoose.model("User", userSchema);
+module.exports = mongoose.model("User", UserSchema);
 // lowercase y pluralizar el nombre den a la bases de datos y no USER sino usuarios

@@ -1,27 +1,25 @@
 "use strict";
 
-const mongoose = require("mongoose");
+const { Schema } = require("mongoose");
 
-const Schema = mongoose.Schema;
-
-//Modelo de Comment
-const CommentSchema = Schema({
+// Modelo de COMMENT
+var CommentSchema = Schema({
   content: String,
   date: { type: Date, default: Date.now },
-  user: { type: Schema.ObjectId, ref: "User" }, // Para luego Popular(Relaciona) a User
+  user: { type: Schema.ObjectId, ref: "User" },
 });
 
-const Comment = mongoose.model("Comment", CommentSchema);
+var Comment = mongoose.model("Comment", CommentSchema);
 
-// Modelo de Topic
-const TopicSchema = Schema({
+//Modelo de TOPIC
+var TopicSchema = Schema({
   title: String,
   content: String,
   code: String,
   lang: String,
-  date: { type: Date, default: Date.now },
-  user: { type: Schema.ObjectId, ref: "User" }, // Para luego Popular(Relaciona) a User
-  comments: [CommentSchema], // Si se deja vacio [ ] no se podra manipular los documentos // CommentSchema = subdocumentos en comments
+  date: { type: Date, default: date.now },
+  user: { type: Schema.ObjectId, ref: "User" },
+  comments: [CommentSchema],
 });
 
 module.exports = mongoose.model("Topic", TopicSchema);
