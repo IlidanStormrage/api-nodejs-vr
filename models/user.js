@@ -12,4 +12,4 @@ const userSchema = Schema({
 });
 
 module.export = mongoose.model("User", userSchema);
-// lowercase y pluralizar el nombre den la bases de datos y no USER sino usuarios
+// lowercase y pluralizar el nombre den a la bases de datos y no USER sino usuarios

@@ -10,6 +10,8 @@ const app = express();
 
 // Cargar archivos de rutas
 
+const user_routes = require("./routes/user");
+
 // Middlewares
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -18,21 +20,23 @@ app.use(bodyParser.json());
 
 // Reescribir rutas
 
-//Ruta / metodo de prueba
-app.get("/prueba", (req, res) => {
-  return res.status(200).send("<h1>Hola Mundo</h1>");
-  return res.status(200).send({
-    nombre: "raul martinez",
-    message: "hola mundo desde el backend con node",
-  });
-});
+app.use("/api", user_routes); // Se le adiciona 'api' a las rutas de user
 
-app.post("/prueba", (req, res) => {
-  return res.status(200).send({
-    nombre: "raul martinez",
-    message: "Hola mundo desde el backend con node soy un metodo post",
-  });
-});
+// //Ruta / metodo de prueba
+// app.get("/prueba", (req, res) => {
+//   return res.status(200).send("<h1>Hola Mundo</h1>");
+//   return res.status(200).send({
+//     nombre: "raul martinez",
+//     message: "hola mundo desde el backend con node",
+//   });
+// });
+
+// app.post("/prueba", (req, res) => {
+//   return res.status(200).send({
+//     nombre: "raul martinez",
+//     message: "Hola mundo desde el backend con node soy un metodo post",
+//   });
+// });
 
 //Exportar el modulo
 module.exports = app;
