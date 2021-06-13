@@ -1,0 +1,9 @@
+bcrypt-nodejs 0.0.3
+body-parser: los datos que nos llegan los convierte en json
+connect-multiparty: hara las subida de archivo
+express: se encarga de darnos un framwrok rest en nuestro backend para hacerlo todo.
+jwt-simple: genera el token
+moment: Para establecer las fechas
+mongoose: ORM
+mongoose-paginate-v2: sirve para paginar
+validator
