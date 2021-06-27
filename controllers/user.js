@@ -3,6 +3,7 @@ var validator = require("validator");
 var User = require("../models/user");
 var bcrypt = require("bcrypt-nodejs");
 var jwt = require("../services/jwt");
+const user = require("../models/user");
 
 const controller = {
   probando: function (req, res) {
@@ -19,11 +20,18 @@ const controller = {
     //Recoger los parametros de la peticion.
     var params = req.body;
     //Validar los datos. (LIBRERIA VALIDATOR)
-    const validate_name = !validator.isEmpty(params.name);
-    const validate_surname = !validator.isEmpty(params.surname);
-    const validate_email =
-      !validator.isEmpty(params.email) && validator.isEmail(params.email);
-    const validate_password = !validator.isEmpty(params.password);
+    try {
+      var validate_name = !validator.isEmpty(params.name);
+      var validate_surname = !validator.isEmpty(params.surname);
+      var validate_email =
+        !validator.isEmpty(params.email) && validator.isEmail(params.email);
+      var validate_password = !validator.isEmpty(params.password);
+    } catch (err) {
+      return res.status(200).send({
+        message: "Faltan datos por enviar",
+      });
+    }
+
     if (
       validate_name &&
       validate_surname &&
@@ -87,9 +95,15 @@ const controller = {
     var params = req.body;
 
     //VALIDAR DATOS
-    var validate_email =
-      !validator.isEmpty(params.email) && validator.isEmail(params.email);
-    var validate_password = !validator.isEmpty(params.password);
+    try {
+      var validate_email =
+        !validator.isEmpty(params.email) && validator.isEmail(params.email);
+      var validate_password = !validator.isEmpty(params.password);
+    } catch (err) {
+      return res.status(200).send({
+        message: "Faltan datos por enviar",
+      });
+    }
 
     if (!validate_email || !validate_password) {
       return res.status(200).send({
@@ -137,6 +151,56 @@ const controller = {
         }
       });
     });
+  },
+  update: function (req, res) {
+    //RECOGER DATOS DEL USUARIO
+    var params = req.body;
+
+    //VALIDAR DATOS
+    try {
+      const validate_name = !validator.isEmpty(params.name);
+      const validate_surname = !validator.isEmpty(params.surname);
+      const validate_email =
+        !validator.isEmpty(params.email) && validator.isEmail(params.email);
+    } catch (err) {
+      return res.status(200).send({
+        message: "Faltan datos por enviar",
+        params,
+      });
+    }
+
+    // ELIMINAR PROPIEDADES INNECESARIAS
+    delete params.password;
+
+    var userId = req.user.sub;
+    //console.log(userId);
+
+    // BUSCAR Y ACTUALIZAR DOCUMENTO DE LAS BASES DE DATOS
+    //condicion, datos a actualizar,opciones,callback
+    User.findOneAndUpdate(
+      { _id: userId },
+      params,
+      { new: true },
+      (err, userUpdated) => {
+        if (err) {
+          return res.status(500).send({
+            status: "error",
+            message: "Error al actualizar usuario",
+          });
+        }
+        if (!userUpdated) {
+          return res.status(200).send({
+            status: "error",
+            message: "No se ha actualizado el usuario",
+          });
+        }
+        //DEVOLVER RESPUESTA
+        return res.status(200).send({
+          status: "success",
+          user: userUpdated,
+        });
+      }
+    );
   },
 };
 

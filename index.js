@@ -9,6 +9,7 @@ mongoose
   .connect("mongodb://localhost:27017/api_rest_node", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    useFindAndModify: false,
   })
   .then(() => {
     console.log(
