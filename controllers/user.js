@@ -2,6 +2,7 @@
 var validator = require("validator");
 var User = require("../models/user");
 var bcrypt = require("bcrypt-nodejs");
+var jwt = require("../services/jwt");
 
 const controller = {
   probando: function (req, res) {
@@ -114,11 +115,20 @@ const controller = {
         //SI ES CORRECTO,
         if (check) {
           //GENERAR TOKEN DE JWT Y DEVOLVERLO(MAS TARDE)**
-          //DEVOLVER LOS DATOS
-          return res.status(200).send({
-            status: "success",
-            user,
-          });
+          if (params.gettoken) {
+            //DEVOLVER LOS DATOS
+            return res.status(200).send({
+              token: jwt.createToken(user),
+            });
+          } else {
+            //LIMPIAR EL OBJETO
+            user.password = undefined; // PARA QUE NO SALGA EN EL RETURN
+            //DEVOLVER LOS DATOS
+            return res.status(200).send({
+              status: "success",
+              user,
+            });
+          }
         } else {
           //SI SE PONE LA PASS Y EL USER MAL
           return res.status(200).send({
