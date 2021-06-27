@@ -81,6 +81,54 @@ const controller = {
       });
     }
   },
+  login: function (req, res) {
+    //RECOGER LOS PARAMETROS DE LA PETICION
+    var params = req.body;
+
+    //VALIDAR DATOS
+    var validate_email =
+      !validator.isEmpty(params.email) && validator.isEmail(params.email);
+    var validate_password = !validator.isEmpty(params.password);
+
+    if (!validate_email || !validate_password) {
+      return res.status(200).send({
+        message: "Los datos son incorrectos, envialos bien",
+      });
+    }
+    // BUSCAR USUARIOS QUE COINCIDAN CON EL EMAIL
+    User.findOne({ email: params.email.toLowerCase() }, (err, user) => {
+      if (err) {
+        return res.status(500).send({
+          message: "Error al intentar identificarse",
+        });
+      }
+      if (!user) {
+        // SI SE PONE EL EMAIL MAL
+        return res.status(404).send({
+          message: "El usuario no existe",
+        });
+      }
+      // SI LO ENCUENTRA,
+      // COMPROBAR LA CONTRASEÑA(COINCIDENCIA DE EMAIL Y PASSWORD/BCRYPT)
+      bcrypt.compare(params.password, user.password, (err, check) => {
+        //SI ES CORRECTO,
+        if (check) {
+          //GENERAR TOKEN DE JWT Y DEVOLVERLO(MAS TARDE)**
+          //DEVOLVER LOS DATOS
+          return res.status(200).send({
+            status: "success",
+            user,
+          });
+        } else {
+          //SI SE PONE LA PASS Y EL USER MAL
+          return res.status(200).send({
+            message: "Las credenciales no son correctas",
+          });
+        }
+      });
+    });
+  },
 };
 
+//// VIDEO 143 SE QUEDO
 module.exports = controller;
