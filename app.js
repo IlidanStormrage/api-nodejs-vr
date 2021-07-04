@@ -11,6 +11,7 @@ const app = express();
 // Cargar archivos de rutas
 
 const user_routes = require("./routes/user");
+const topic_routes = require("./routes/topic");
 
 // Middlewares
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -21,6 +22,7 @@ app.use(bodyParser.json());
 // Reescribir rutas
 
 app.use("/api", user_routes); // Se le adiciona 'api' a las rutas de user
+app.use("/api", topic_routes); // Se le adiciona 'api' a las rutas de user
 
 // //Ruta / metodo de prueba
 // app.get("/prueba", (req, res) => {

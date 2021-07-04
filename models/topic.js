@@ -1,6 +1,8 @@
 "use strict";
 
-const { Schema } = require("mongoose");
+var mongoose = require("mongoose");
+var mongoosePaginate = require("mongoose-paginate-v2");
+var Schema = mongoose.Schema;
 
 // Modelo de COMMENT
 var CommentSchema = Schema({
@@ -17,9 +19,12 @@ var TopicSchema = Schema({
   content: String,
   code: String,
   lang: String,
-  date: { type: Date, default: date.now },
+  date: { type: Date, default: Date.now },
   user: { type: Schema.ObjectId, ref: "User" },
   comments: [CommentSchema],
 });
+
+// CARGAR PAGINACION
+TopicSchema.plugin(mongoosePaginate);
 
 module.exports = mongoose.model("Topic", TopicSchema);
