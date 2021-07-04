@@ -4,6 +4,8 @@ var User = require("../models/user");
 var bcrypt = require("bcrypt-nodejs");
 var jwt = require("../services/jwt");
 const user = require("../models/user");
+var fs = require("fs"); //PERMITE BORRAR FICHEROS
+var path = require("path");
 
 const controller = {
   probando: function (req, res) {
@@ -220,7 +222,73 @@ const controller = {
       );
     }
   },
+  uploadAvatar: function (req, res) {
+    // CONFIGURAR EL MODULO MULTIPARTY(MD)- routes/users.js
+
+    // RECOGER EL FICHERO DE LA PETICION.
+    var file_name = "Avatar no subido...";
+
+    if (!req.files) {
+      return res.status(404).send({
+        status: "error",
+        message: file_name,
+      });
+    }
+
+    // CONSEGUIR EL NOMBRE Y LA EXTENSION DEL ARCHIVO
+    var file_path = req.files.file0.path;
+    var file_split = file_path.split("\\");
+
+    //**ADVERTENCIA EN LINUX/ MACC \\ POR /
+
+    var file_name = file_split[2]; //NOMBRE DEL ARCHIVO
+
+    //EXTENSION DEL ARCHIVO
+    var ext_split = file_name.split("."); // SE BORRA EL BACKSLASH ("\.")
+    var file_ext = ext_split[1];
+
+    // COMPROBAR EXTENSION(SOLO IMAGENES), SI NO ES VALIDA BORRAR FICHERO SUBIDO
+    if (
+      file_ext != "png" &&
+      file_ext != "jpg" &&
+      file_ext != "jpeg" &&
+      file_ext != "gif"
+    ) {
+      fs.unlink(file_path, e => {
+        return res.status(404).send({
+          status: "error",
+          message: "La extension del archivo no es valida",
+          file: file_ext,
+        });
+      });
+    } else {
+      //SACAR EL ID DEL USUARIO IDENTIFICADO
+      var userId = req.user.sub;
+
+      // BURCAR Y ACTUALIZAR DOCUMENTOS BD
+      User.findOneAndUpdate(
+        { _id: userId },
+        { image: file_name },
+        { new: true },
+        (err, userUpdated) => {
+          if (err || !userUpdated) {
+            //DEVOLVER RESPUESTA
+            return res.status(500).send({
+              status: "error",
+              message: "Error al guardar el usuario",
+              file: file_ext,
+            });
+          }
+          //DEVOLVER RESPUESTA
+          return res.status(200).send({
+            status: "success",
+            userUpdated,
+          });
+        }
+      );
+    }
+  },
 };
 
-//// VIDEO 152 SE QUEDO(EL POSTMAN ESTA CARGANDO Y NO SALE LA PETICION)
+//// VIDEO 154 RENICIAR PARA ENTENDER
 module.exports = controller;
