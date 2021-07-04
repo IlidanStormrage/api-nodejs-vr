@@ -54,6 +54,7 @@ const controller = {
             message: "Error al comprobar duplicidad de usuario",
           });
         }
+
         if (!issetUser) {
           // Si no existe,
           // cifrar la contraseña
@@ -175,34 +176,51 @@ const controller = {
     var userId = req.user.sub;
     //console.log(userId);
 
-    // BUSCAR Y ACTUALIZAR DOCUMENTO DE LAS BASES DE DATOS
-    //condicion, datos a actualizar,opciones,callback
-    User.findOneAndUpdate(
-      { _id: userId },
-      params,
-      { new: true },
-      (err, userUpdated) => {
+    //COMPROBAR SI EL EMAIL ES UNICO
+    if (req.user.email != params.email) {
+      User.findOne({ email: params.email.toLowerCase() }, (err, user) => {
         if (err) {
           return res.status(500).send({
-            status: "error",
-            message: "Error al actualizar usuario",
+            message: "Error al intentar identificarse",
           });
         }
-        if (!userUpdated) {
+        if (user && user.email == params.email) {
+          // SI SE PONE EL EMAIL MAL
           return res.status(200).send({
-            status: "error",
-            message: "No se ha actualizado el usuario",
+            message: "El E-mail no puede ser modificado",
           });
         }
-        //DEVOLVER RESPUESTA
-        return res.status(200).send({
-          status: "success",
-          user: userUpdated,
-        });
-      }
-    );
+      });
+    } else {
+      // BUSCAR Y ACTUALIZAR DOCUMENTO DE LAS BASES DE DATOS
+      //condicion, datos a actualizar,opciones,callback
+      User.findOneAndUpdate(
+        { _id: userId },
+        params,
+        { new: true },
+        (err, userUpdated) => {
+          if (err) {
+            return res.status(500).send({
+              status: "error",
+              message: "Error al actualizar usuario",
+            });
+          }
+          if (!userUpdated) {
+            return res.status(200).send({
+              status: "error",
+              message: "No se ha actualizado el usuario",
+            });
+          }
+          //DEVOLVER RESPUESTA
+          return res.status(200).send({
+            status: "success",
+            user: userUpdated,
+          });
+        }
+      );
+    }
   },
 };
 
-//// VIDEO 143 SE QUEDO
+//// VIDEO 152 SE QUEDO(EL POSTMAN ESTA CARGANDO Y NO SALE LA PETICION)
 module.exports = controller;
