@@ -166,6 +166,63 @@ var controller = {
         });
       });
   },
+  update: function (req, res) {
+    //RECOGER EL ID DEL TOPIC EN LA URL
+    var topicId = req.params.id;
+
+    //RECOGER LOS DATOS QUE LLEGAN DESDE POST
+    var params = req.body;
+
+    // VALIDAR LOS DATOS
+    try {
+      var validate_title = !validator.isEmpty(params.title);
+      var validate_content = !validator.isEmpty(params.content);
+      var validate_lang = !validator.isEmpty(params.lang);
+    } catch (err) {
+      return res.status(200).send({
+        message: "Faltan datos por enviar",
+      });
+    }
+    if (validate_title && validate_content && validate_lang) {
+      //MONTAR UN JSON LOS DATOS MODIFICABLES
+      var update = {
+        title: params.title,
+        content: params.content,
+        code: params.code,
+        lang: params.lang,
+      };
+      //FIND AND UPDATE DEL TOPIC POR ID Y POR ID DE USUARIO
+      Topic.findOneAndUpdate(
+        { _id: topicId, user: req.user.sub },
+        update,
+        { new: true },
+        (err, topicUpdated) => {
+          if (err) {
+            return res.status(500).send({
+              status: "error",
+              message: "error en la peticion",
+            });
+          }
+          if (!topicUpdated) {
+            return res.status(404).send({
+              status: "error",
+              message: "no se ha actualizado el tema",
+            });
+          }
+
+          //DEVOLVER RESPUESTA
+          return res.status(200).send({
+            status: "success",
+            topic: topicUpdated,
+          });
+        }
+      );
+    } else {
+      return res.status(200).send({
+        message: "La validacion de los datos no es correcta",
+      });
+    }
+  },
 };
 
 ///TERINE EL VIDEO 163
