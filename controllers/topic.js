@@ -105,6 +105,68 @@ var controller = {
       });
     });
   },
+  getTopicsByUser: function (req, res) {
+    //CONSEGUIR EL ID DEL USUARIO
+    var userId = req.params.user;
+
+    //HACER FIND CON UNA CONDICION DE USUARIO
+    Topic.find({
+      user: userId,
+    })
+      .sort([["date", "descending"]])
+      .exec((err, topics) => {
+        if (err) {
+          //DEVOLVER UN RESULTADO
+          return res.status(500).send({
+            status: "error",
+            message: "Error en la peticion",
+          });
+        }
+        if (!topics) {
+          //DEVOLVER UN RESULTADO
+          return res.status(404).send({
+            status: "error",
+            message: "no hay temas para mostrar",
+          });
+        }
+
+        //DEVOLVER UN RESULTADO
+        return res.status(200).send({
+          status: "success",
+          topics,
+        });
+      });
+  },
+
+  getTopic: function (req, res) {
+    //SACAR EL ID DEL TOPIC DE LA URL
+    var topicId = req.params.id;
+
+    // FIND POR ID DEL TOPIC
+    Topic.findById(topicId)
+      .populate("user")
+      .exec((err, topic) => {
+        if (err) {
+          return res.status(500).send({
+            status: "error",
+            message: "error en la peticion",
+          });
+        }
+        if (!topic) {
+          return res.status(404).send({
+            status: "error",
+            message: "no existe el topic",
+          });
+        }
+
+        //DEVOLVER RESULTADO
+        return res.status(200).send({
+          status: "success",
+          topic,
+        });
+      });
+  },
 };
 
+///TERINE EL VIDEO 163
 module.exports = controller;
