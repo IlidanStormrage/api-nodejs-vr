@@ -223,6 +223,33 @@ var controller = {
       });
     }
   },
+  delete: function (req, res) {
+    //SACAR ID DELTOPIC DE LA URL
+    var topicId = req.params.id;
+    //FIND AND DELETE POR TOPICID Y POR USERID
+    Topic.findOneAndDelete(
+      { _id: topicId, user: req.user.sub },
+      (err, topicRemoved) => {
+        if (err) {
+          return res.status(500).send({
+            status: "error",
+            message: "error en la peticion",
+          });
+        }
+        if (!topicRemoved) {
+          return res.status(404).send({
+            status: "error",
+            message: "no se ha removido el tema",
+          });
+        }
+        //DEVOLVER RESPUESTA
+        return res.status(200).send({
+          status: "success",
+          topic: topicRemoved,
+        });
+      }
+    );
+  },
 };
 
 ///TERINE EL VIDEO 163
