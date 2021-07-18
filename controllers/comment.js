@@ -153,6 +153,4 @@ var controller = {
   },
 };
 
-//ERROR 174 NO EXISTE EL TEMA BOTA POSTMAN
-
 module.exports = controller;

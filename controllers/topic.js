@@ -250,6 +250,46 @@ var controller = {
       }
     );
   },
+  search: function (req, res) {
+    // SACAR STRING A BUSCAR DE LA URL
+    var searchString = req.params.search;
+    // FIND  CON OPERADOR 'OR'
+    Topic.find({
+      $or: [
+        {
+          title: { $regex: searchString, $options: "i" },
+        },
+        {
+          content: { $regex: searchString, $options: "i" },
+        },
+        {
+          lang: { $regex: searchString, $options: "i" },
+        },
+        {
+          code: { $regex: searchString, $options: "i" },
+        },
+      ],
+    })
+      .sort([["date", "descending"]])
+      .exec((err, topics) => {
+        if (err) {
+          return res.status(500).send({
+            status: "error",
+            message: "error en la peticion",
+          });
+        }
+        if (!topics) {
+          return res.status(500).send({
+            status: "error",
+            message: "no hay temas disponibles",
+          });
+        }
+        return res.status(200).send({
+          status: "success",
+          topics,
+        });
+      });
+  },
 };
 
 ///TERINE EL VIDEO 170
