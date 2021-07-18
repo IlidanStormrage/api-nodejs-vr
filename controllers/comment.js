@@ -1,0 +1,77 @@
+"use strict";
+var validator = require("validator");
+var Topic = require("../models/topic");
+var controller = {
+  add: function (req, res) {
+    //RECOGER EL ID DEL TOPIC DE LA URL
+    var topicId = req.params.topicId;
+    //FIND POR ID DEL TOPIC
+    Topic.findById(topicId).exec((err, topic) => {
+      if (err) {
+        return res.status(500).send({
+          status: "Error",
+          message: "Error en la peticion",
+        });
+      }
+      if (!topic) {
+        return res.status(404).send({
+          status: "Error",
+          message: "No existe el tema",
+        });
+      }
+
+      //COMPROBADOR OBJT USUARIO Y VALIDAR DATOS
+      if (req.body.content) {
+        // VALIDAR LOS DATOS
+        try {
+          var validate_content = !validator.isEmpty(req.body.content);
+        } catch (err) {
+          return res.status(200).send({
+            message: "No has comentado nada",
+          });
+        }
+        if (validate_content) {
+          var comment = {
+            user: req.user.sub,
+            content: req.body.content,
+          };
+          //EN LA PROPIEDAD COMMENTS DEL OBJ RESULTANTE HACER UN PUSH
+          topic.comments.push(comment);
+
+          //GUARDAR EL TOPIC COMPLETO
+          topic.save(err => {
+            if (err) {
+              return res.status(500).send({
+                status: "Error",
+                message: "Error al guardar el comentario",
+              });
+            }
+            //DEVOLVER RESPUESTA
+            return res.status(200).send({
+              status: "success",
+              topic,
+            });
+          });
+        } else {
+          return res.status(200).send({
+            message: "No se han validado los datos del comentario",
+          });
+        }
+      }
+    });
+  },
+  update: function (req, res) {
+    return res.status(200).send({
+      message: "Metodo de editar comentario",
+    });
+  },
+  delete: function (req, res) {
+    return res.status(200).send({
+      message: "Metodo de borrado de comentarios",
+    });
+  },
+};
+
+//ERROR 172 NO EXISTE EL TEMA BOTA POSTMAN
+
+module.exports = controller;
