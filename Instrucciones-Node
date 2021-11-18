@@ -7,3 +7,6 @@ moment: Para establecer las fechas
 mongoose: ORM
 mongoose-paginate-v2: sirve para paginar
 validator
+
+
+NOS QUEDAMOS EN QE router.get("/user-topics/:user?", TopicController.getTopicsByUser);

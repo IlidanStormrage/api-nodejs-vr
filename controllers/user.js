@@ -3,7 +3,6 @@ var validator = require("validator");
 var User = require("../models/user");
 var bcrypt = require("bcrypt-nodejs");
 var jwt = require("../services/jwt");
-const user = require("../models/user");
 var fs = require("fs"); //PERMITE BORRAR FICHEROS
 var path = require("path");
 const { exec } = require("child_process");
